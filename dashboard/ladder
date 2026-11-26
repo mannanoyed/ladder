@@ -1,0 +1,20 @@
+#!/bin/bash
+# ladder — one entry point.  ./ladder <command>
+DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+case "${1:-}" in
+  start)     exec node --no-warnings "$DIR/server.mjs" ;;
+  open)      open "http://localhost:${LADDER_PORT:-7777}" ;;
+  sweep)     if [ $# -eq 1 ]; then exec node --no-warnings "$DIR/sweep/run-sweep.mjs" --manual; fi
+             case "$2" in --hunt|--mail) exec node --no-warnings "$DIR/sweep/run-sweep.mjs" "$2" ;; esac
+             exec node --no-warnings "$DIR/cli.mjs" "$@" ;;
+  install)   exec bash "$DIR/sweep/install.sh" "${2:-install}" ;;
+  import)    [ -f "$DIR/import/migrate.mjs" ] || { echo "no import/migrate.mjs: the CSV importer is local-only"; exit 1; }
+             exec node --no-warnings "$DIR/import/migrate.mjs" ;;
+  backup)    mkdir -p "$DIR/backups"; f="$DIR/backups/ladder-$(date +%Y%m%d-%H%M%S).db"
+             sqlite3 "$DIR/ladder.db" ".backup '$f'" && echo "$f" ;;
+  export)    exec node --no-warnings "$DIR/cli.mjs" export ;;
+  sql)       shift; exec sqlite3 "$DIR/ladder.db" "$@" ;;
+  "" | help) echo "ladder — start | open | sweep | install [server|uninstall] | import | backup | sql | <cli command>"
+             node --no-warnings "$DIR/cli.mjs" 2>&1 | tail -n +2 ;;
+  *)         exec node --no-warnings "$DIR/cli.mjs" "$@" ;;
+esac

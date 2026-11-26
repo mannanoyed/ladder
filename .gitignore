@@ -1,0 +1,13 @@
+# Allowlist. Everything at the top level is ignored unless named below, so personal files kept
+# next to the tool (resume, notes, fact file, transcripts, backups) can never be committed by
+# accident. To publish a new top-level file, add a `!/name` line here on purpose.
+/*
+!/.gitignore
+!/README.md
+!/ARCHITECTURE.md
+!/CLAUDE.md
+!/LICENSE
+!/dashboard/
+
+.DS_Store
+CLAUDE.local.md

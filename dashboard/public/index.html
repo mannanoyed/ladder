@@ -1,0 +1,215 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ladder</title>
+<link rel="stylesheet" href="/style.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><text y='13' font-size='13'>🪜</text></svg>">
+</head>
+<body>
+<header>
+  <div class="brand">
+    <span class="logo">🪜</span>
+    <div>
+      <h1>ladder</h1>
+      <div class="sub" id="runway">—</div>
+    </div>
+  </div>
+  <div class="kpis" id="kpis"></div>
+  <div class="hdr-actions">
+    <span class="live" id="live" title="live connection">●</span>
+    <button id="huntBtn" class="btn primary" title="Scrape every portal for new jobs. Finds supply; sends nothing.">Run hunt</button>
+    <button id="mailBtn" class="btn" title="Read mail and portal messages for replies. Finds no new jobs.">Run mail sweep</button>
+  </div>
+</header>
+
+<nav id="tabs">
+  <button data-tab="today" class="on">Today</button>
+  <button data-tab="leads">Leads</button>
+  <button data-tab="apps">Applications</button>
+  <button data-tab="people">People</button>
+  <button data-tab="stats">Stats</button>
+  <button data-tab="roadmap">Roadmap</button>
+</nav>
+
+<main>
+  <!-- ===================== TODAY — one session's work, already chosen ===================== -->
+  <!-- The order is the order you work in: has the machine run, what has a date on it, what to
+       apply to, who to message. Nothing below the fold is required to finish a session. -->
+  <section id="tab-today" class="tab on">
+    <div class="card" id="sessionCard"></div>
+
+    <div class="card">
+      <h2>What has a date on it
+        <span class="hint">replies first — an unanswered thread is the most expensive thing this system holds</span>
+        <button class="btn tiny" data-add-agenda="1">+ Add</button></h2>
+      <div id="agendaForm"></div>
+      <div id="agenda"></div>
+      <div id="agendaDone"></div>
+    </div>
+
+    <div class="card">
+      <h2>Apply to these <span class="hint">eight doors, one per company, reasons shown</span></h2>
+      <div id="picks" class="recos"></div>
+      <div id="picksFoot"></div>
+    </div>
+
+    <div class="card">
+      <h2>People to message
+        <span class="hint">every human reply you have ever had came from a person, not a form — you write it, this never does</span></h2>
+      <div id="outreach" class="recos"></div>
+    </div>
+  </section>
+
+  <!-- ===================== LEADS — supply the hunt found, ranked by potential ===================== -->
+  <!-- A lead is something that exists; an application is something you sent. They shared one table
+       until 2026-09-12 with a `scraped` pill as the only tell. Click a score for its five bars. -->
+  <section id="tab-leads" class="tab">
+    <div class="card">
+      <h2>Leads <span class="hint" id="leadCount"></span></h2>
+      <div class="boardsearch">
+        <input type="text" id="leadSearch" placeholder="Filter by company or role…" autocomplete="off">
+      </div>
+      <div id="leadFilters" class="subfilters"></div>
+      <div id="leads"></div>
+    </div>
+    <div id="leadDrawer" class="drawer" hidden></div>
+  </section>
+
+  <!-- ===================== APPLICATIONS — what left, and where it is ===================== -->
+  <section id="tab-apps" class="tab">
+    <!-- Anything that answered, at the top and unmissable. An unanswered reply is the most
+         expensive thing in this system; it once cost eight days on a warm referral. -->
+    <div id="needsYou"></div>
+
+    <div class="card">
+      <h2>Applications <span class="hint" id="appCount"></span></h2>
+      <div class="boardsearch">
+        <input type="text" id="appSearch" placeholder="Filter by company or role…" autocomplete="off">
+      </div>
+      <div id="stageStrip" class="strip"></div>
+      <div id="appFilters" class="subfilters"></div>
+      <div id="apps"></div>
+    </div>
+  </section>
+
+  <!-- ===================== PEOPLE — the 196 humans that had no surface ===================== -->
+  <section id="tab-people" class="tab">
+    <div class="card">
+      <h2>People <span class="hint" id="peopleCount"></span></h2>
+      <div id="peopleFilters" class="subfilters"></div>
+      <div id="peopleTable"></div>
+    </div>
+  </section>
+
+  <!-- ===================== STATS — what the funnel is actually doing ===================== -->
+  <section id="tab-stats" class="tab">
+    <div class="card">
+      <h2>What to change <span class="hint">derived from the numbers below, never from a hunch</span></h2>
+      <div id="recommendations" class="recolist"></div>
+    </div>
+
+    <!-- The four numbers that decide what this week looks like. Everything else on the page
+         explains one of them. -->
+    <div class="card">
+      <h2>Where you stand <span class="hint">the four numbers the rest of this page exists to explain</span></h2>
+      <div id="headline" class="statgrid"></div>
+    </div>
+
+    <div class="split">
+      <div class="col wide">
+        <div class="card">
+          <h2>Forecast to the last working day <span class="hint">stops at conversations on purpose — see the note</span></h2>
+          <div id="forecast"></div>
+        </div>
+      </div>
+      <div class="col">
+        <div class="card">
+          <h2>Where the funnel loses people <span class="hint">each step measured against the one before it, so a bad number localises the problem</span></h2>
+          <div id="funnelSteps"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="split">
+      <div class="col wide">
+        <div class="card">
+          <h2>Where live threads come from <span class="hint">route, not channel — a referral and a job board are different motions</span></h2>
+          <div id="routes"></div>
+        </div>
+      </div>
+      <div class="col">
+        <div class="card">
+          <h2>Per platform <span class="hint">rate with a 95% interval, because 0 of 21 is not the same claim as 0 of 210</span></h2>
+          <div id="platforms"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Collapsed by default. None of it is deleted; none of it is needed to decide what to do
+         next, and a page you scroll past is a page you stop reading. -->
+    <details class="more card">
+      <summary>The deep numbers</summary>
+      <div class="split">
+        <div class="col wide">
+          <div class="subcard">
+            <h2>Why leads die <span class="hint">parsed from the reason the judge wrote when it dropped each one</span></h2>
+            <div id="deaths"></div>
+          </div>
+          <div class="subcard">
+            <h2>Applications <span class="hint" id="appsHint"></span></h2>
+            <div id="appStats" class="statgrid"></div>
+            <div id="appWeeks" class="spark"></div>
+          </div>
+          <div class="subcard">
+            <h2>Does the score predict a reply? <span class="hint">if it does not, the board's ranking is decoration</span></h2>
+            <div id="calibration"></div>
+          </div>
+          <div class="subcard">
+            <h2>Does the band predict a reply? <span class="hint">same question, different feature</span></h2>
+            <div id="bands"></div>
+          </div>
+        </div>
+        <div class="col">
+          <div class="subcard">
+            <h2>How long an answer takes <span class="hint">and when a silent application is evidence, not hope</span></h2>
+            <div id="latency"></div>
+          </div>
+          <div class="subcard">
+            <h2>Rejection &amp; silence <span class="hint">an explicit no is rarer than being ignored</span></h2>
+            <div id="rejections"></div>
+          </div>
+          <div class="subcard">
+            <h2>Supply <span class="hint">is the board filling faster than you can empty it</span></h2>
+            <div id="supply"></div>
+          </div>
+          <div class="subcard">
+            <h2>Mail &amp; portal messages <span class="hint">every surface an answer can arrive on</span></h2>
+            <div id="mailStats"></div>
+          </div>
+          <div class="subcard">
+            <h2>Sweeps <span class="hint">did the machine run, and did each channel work</span></h2>
+            <div id="sweepStats"></div>
+          </div>
+          <div class="subcard">
+            <h2>Recent inbound</h2>
+            <div id="mailFeed" class="feed"></div>
+          </div>
+        </div>
+      </div>
+    </details>
+  </section>
+
+  <!-- ===================== ROADMAP — a checklist, not a calendar ===================== -->
+  <section id="tab-roadmap" class="tab">
+    <div class="card">
+      <h2>Runway <span class="hint">notice served 09 Sep, last working day ~09 Nov — the only date here that does not move</span></h2>
+      <div id="runwayBar"></div>
+    </div>
+    <div id="phases" class="phases"></div>
+  </section>
+</main>
+<script src="/app.js"></script>
+</body>
+</html>

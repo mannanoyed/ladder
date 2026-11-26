@@ -1,0 +1,24 @@
+# Your job search. Never leaves this machine.
+*.db
+*.db-wal
+*.db-shm
+backups/
+export/
+.sweep-tmp/
+.bump
+
+# You.
+profile.local.mjs
+sweep/SWEEP.local.md
+
+# Local-only notes and the one-off CSV importer.
+import/
+sweep/LINKEDIN.md
+sweep/EXTRACTION-PLAN.md
+
+# The scraping profile holds live session cookies for your logged-in portals. It never goes to a
+# remote, private repo or not.
+sweep/chrome-profile/
+sweep/logs/
+
+.DS_Store
